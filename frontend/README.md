@@ -3,21 +3,50 @@
 A React-based frontend application for the MoneyLoyal loyalty and rewards platform.
 
 ## Project Structure
+```
 frontend/
 ├── src/
-│ ├── components/
-│ │ └── home/
-│ │ ├── common/ # Reusable components (Button, etc.)
-│ │ ├── layout/ # Layout components (Header, Footer)
-│ │ └── sections/ # Home page sections
-│ ├── pages/
-│ │ ├── auth/ # Authentication pages
-│ │ │ ├── Login.tsx
-│ │ │ ├── Signup.tsx
-│ │ │ └── Forgot.tsx
-│ │ ├── dashboard/ # Dashboard related pages
-│ │ └── Home.tsx # Landing page
-│ └── utils/ # Utility functions and helpers
+│   ├── components/
+│   │   └── home/
+│   │       ├── common/       # Reusable components
+│   │       │   └── Button.tsx
+│   │       ├── layout/       # Layout components
+│   │       │   ├── Header.tsx
+│   │       │   └── Footer.tsx
+│   │       └── sections/     # Home page sections
+│   ├── pages/
+│   │   ├── auth/            # Authentication pages
+│   │   │   ├── Login.tsx    # User login
+│   │   │   ├── Signup.tsx   # New user registration
+│   │   │   └── Forgot.tsx   # Password recovery
+│   │   ├── dashboard/       # Dashboard related pages
+│   │   │   └── Dashboard.tsx
+│   │   └── Home.tsx        # Landing page
+│   ├── utils/              # Utility functions and helpers
+│   │   └── Utils.tsx       # Common utility functions
+│   ├── App.tsx            # Main application component
+│   └── main.tsx          # Application entry point
+├── public/               # Static assets
+└── package.json         # Project dependencies and scripts
+```
+
+The project follows a modular structure with clear separation of concerns:
+
+- `components/`: Reusable UI components
+  - `common/`: Shared components like buttons, inputs
+  - `layout/`: Page layout components
+  - `sections/`: Specific page section components
+
+- `pages/`: Application routes and pages
+  - `auth/`: Authentication related pages
+  - `dashboard/`: User dashboard pages
+
+- `utils/`: Helper functions and utilities
+  - Error handling
+  - API integration
+  - Common functions
+
+Each component is built with TypeScript and follows React best practices.
 
 ## Tech Stack
 
