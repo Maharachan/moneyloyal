@@ -7,57 +7,56 @@ A React-based frontend application for the MoneyLoyal loyalty and rewards platfo
 frontend/
 ├── src/
 │   ├── components/
-│   │   └── home/
-│   │       ├── common/       # Reusable components
-│   │       │   └── Button.tsx
-│   │       ├── layout/       # Layout components
-│   │       │   ├── Header.tsx
-│   │       │   └── Footer.tsx
-│   │       └── sections/     # Home page sections
+│   │   ├── home/           # Landing page components
+│   │   │   ├── common/     # Reusable components
+│   │   │   ├── layout/     # Layout components
+│   │   │   └── sections/   # Home page sections
+│   │   └── ui/            # Core UI components
+│   │       ├── card.tsx
+│   │       ├── dialog.tsx
+│   │       ├── input.tsx
+│   │       └── scroll-area.tsx
+│   ├── contexts/         # React contexts
+│   │   └── auth-contexts.tsx
 │   ├── pages/
-│   │   ├── auth/            # Authentication pages
-│   │   │   ├── Login.tsx    # User login
-│   │   │   ├── Signup.tsx   # New user registration
-│   │   │   └── Forgot.tsx   # Password recovery
-│   │   ├── dashboard/       # Dashboard related pages
-│   │   │   └── Dashboard.tsx
-│   │   └── Home.tsx        # Landing page
-│   ├── utils/              # Utility functions and helpers
-│   │   └── Utils.tsx       # Common utility functions
-│   ├── App.tsx            # Main application component
-│   └── main.tsx          # Application entry point
-├── public/               # Static assets
-└── package.json         # Project dependencies and scripts
+│   │   ├── auth/         # Authentication pages
+│   │   ├── dashboard/    # Dashboard pages
+│   │   │   └── offers/   # Offers management
+│   │   └── Home.tsx     # Landing page
+│   ├── utils/           # Utility functions
+│   ├── App.tsx         # Main application component
+│   └── main.tsx       # Application entry point
 ```
-
-The project follows a modular structure with clear separation of concerns:
-
-- `components/`: Reusable UI components
-  - `common/`: Shared components like buttons, inputs
-  - `layout/`: Page layout components
-  - `sections/`: Specific page section components
-
-- `pages/`: Application routes and pages
-  - `auth/`: Authentication related pages
-  - `dashboard/`: User dashboard pages
-
-- `utils/`: Helper functions and utilities
-  - Error handling
-  - API integration
-  - Common functions
-
-Each component is built with TypeScript and follows React best practices.
 
 ## Tech Stack
 
 - **React 18** with TypeScript
 - **React Router v7** for routing
 - **Tailwind CSS** for styling
-- **Vite** as build tool
-- **React Toastify** for notifications
+- **Radix UI** for accessible components
 - **Lucide React** for icons
+- **React Toastify** for notifications
+- **Vite** as build tool
 
-## API Integration Points
+## Core Features
+
+1. **Authentication System**
+   - JWT-based authentication
+   - Protected routes
+   - User session management
+
+2. **Dashboard**
+   - Offers management
+   - User profile
+   - Responsive layout with mobile support
+
+3. **UI Components**
+   - Accessible dialog system
+   - Card components
+   - Custom input fields
+   - Scrollable areas
+
+## API Integration
 
 ### Authentication Endpoints
 
@@ -66,6 +65,16 @@ Each component is built with TypeScript and follows React best practices.
    interface LoginRequest {
      email: string;
      password: string;
+   }
+   
+   interface LoginResponse {
+     success: boolean;
+     token: string;
+     user: {
+       id: string;
+       name: string;
+       email: string;
+     }
    }
    ```
 
@@ -79,86 +88,98 @@ Each component is built with TypeScript and follows React best practices.
    }
    ```
 
-3. **Forgot Password** (`POST /auth/forgot-password`)
+### Offers Endpoints
+
+1. **Get Offers** (`GET /api/offers`)
    ```typescript
-   interface ForgotPasswordRequest {
-     email: string;
+   interface Offer {
+    id: string;
+    title: string;
+    description: string;
+    points: number;
+    discountPercentage: number;
+    expiresAt: Date;
+    image: string;
+    redemptionCode: string;
+  }
+   ```
+
+2. **Create Offer** (`POST /api/offers`)
+   ```typescript
+   interface CreateOfferRequest {
+     title: string;
+     description: string;
+     points: number;
+     discountPercentage: number;
+     expiresAt: Date;
+     image: string;
+     redemptionCode: string;
    }
    ```
 
-## Authentication Flow
+## Notes for Backend Developers
 
-1. User authentication state is managed through:
-   - JWT tokens stored in localStorage
-   - Protected routes using `PrivateRoute` component
-   - Auto-redirect to login for unauthenticated users
+1. **API Response Format**
+   ```typescript
+   interface ApiResponse<T> {
+     success: boolean;
+     message: string;
+     data?: T;
+     error?: {
+       code: string;
+       details: Array<{
+         field?: string;
+         message: string;
+       }>;
+     };
+   }
+   ```
 
-## Key Features
+2. **Authentication Requirements**
+   - All protected routes expect JWT token in Authorization header
+   - Token format: `Bearer <token>`
+   - Token expiration handling required
+   - Refresh token mechanism recommended
 
-1. **Responsive Design**
-   - Mobile-first approach
-   - Breakpoints follow Tailwind's default configuration
+3. **Error Handling**
+   - Use consistent error codes
+   - Provide field-level validation errors
+   - Include user-friendly error messages
 
-2. **Theme**
-   - Primary color: Purple (#7000FF)
-   - Secondary color: Green (green-300)
-   - Dark text: gray-800
-   - Light text: white
+4. **Data Validation**
+   - Validate email format
+   - Password requirements:
+     - Minimum 8 characters
+     - At least one uppercase letter
+     - At least one number
+     - At least one special character
 
-3. **Form Validation**
-   - Client-side validation for all forms
-   - Error handling with toast notifications
-   - Password strength requirements
+5. **Rate Limiting**
+   - Implement rate limiting for auth endpoints
+   - Suggested: 5 attempts per minute for login
 
-## Development Setup
+## Environment Setup
 
-1. Install dependencies:
+1. Create `.env` file:
+   ```env
+   VITE_API_URL=http://localhost:5000
+   VITE_APP_ENV=development
+   ```
+
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-2. Start development server:
+3. Start development server:
    ```bash
    npm run dev
    ```
 
-3. Build for production:
-   ```bash
-   npm run build
-   ```
-
-## Environment Variables
-
-Create a `.env` file in the root directory:
-
-```env
-VITE_API_URL=http://localhost:5000
-```
-
-## Notes for Backend Developers
-
-1. All API calls expect JSON responses with this structure:
-   ```json
-   {
-     "success": boolean,
-     "message": string,
-     "data"?: any,
-     "error"?: {
-       "details": Array<{message: string}>
-     }
-   }
-   ```
-
-2. Authentication tokens should be:
-   - Sent in Authorization header
-   - Format: `Bearer <token>`
-
-3. Protected routes require valid JWT tokens
-
-4. Error responses should include detailed messages for proper client-side handling
 
 ## Future Implementations
 
-- [ ] Dashboard
+- [ ] Profile Page
+
 
 
