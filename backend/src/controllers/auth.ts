@@ -1,13 +1,11 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { prismaClient } from "..";
 import { hashSync, compareSync } from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../secrets";
 import { BadRequestsException } from "../exceptions/bad-requests";
 import { ErrorCode } from "../exceptions/root";
-import { UnprocessableEntity } from "../exceptions/validation";
 import { signupSchema } from "../schema/user";
-import { Sign } from "crypto";
 import { NotFoundException } from "../exceptions/not-found";
 
 export const signup = async (req: Request,res: Response) => {
@@ -27,8 +25,7 @@ export const signup = async (req: Request,res: Response) => {
       password: hashSync(password, 10),
     },
   });
-
-  res.json( user );
+  res.json( {message: "User created successfully!", success: true});
 };
 
 export const login = async (req: Request, res: Response) => {
@@ -41,9 +38,8 @@ export const login = async (req: Request, res: Response) => {
     throw new BadRequestsException("Incorrect password!", ErrorCode.INCORRECT_PASSWORD);
   }
 
-  const token = jwt.sign({ userId: user.id }, JWT_SECRET);
+  const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET);
 
-  const { password: _, ...userWithoutPassword } = user;
 
-  res.json({ user: userWithoutPassword, token });
+  res.json({ user: {id: user.id, email: user.email, name: user.name, }, token });
 };

@@ -3,8 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../../utils/Utils';
 import Button from '../../components/home/common/Button';
+import { useAuth } from '../../contexts/auth-contexts';
 
 const Signup = () => {
+  const { signup } = useAuth();
   const [signupInfo, setSignupInfo] = useState({
     name: "",
     email: "",
@@ -58,31 +60,13 @@ const Signup = () => {
     if (!validateForm()) return;
 
     try {
-      const url = `http://localhost:5000/auth/signup`;
-      console.log(signupInfo); // Log the signupInfo object to check its structure 
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(signupInfo),
-      });
-      
-      const result = await response.json();
-      const { success, message, error } = result;
-      
-      if (success) {
-        handleSuccess(message);
-        setTimeout(() => {
-          navigate("/login");
-        }, 1000);
-      } else if (error) {
-        const details = error?.details[0].message;
-        handleError(details);
-      } else {
-        handleError(message);
-      }
-    } catch (err ) {
+      await signup(signupInfo.email, signupInfo.password, signupInfo.name, signupInfo.phone);
+      handleSuccess('Signup successful');
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1000);
+    } catch (error) {
+      console.error('Signup error:', error);
       handleError("An error occurred during signup");
     }
   };
