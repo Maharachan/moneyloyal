@@ -1,34 +1,46 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/auth-contexts';
-import Home from '../pages/Home'
-import Login from '../pages/auth/Login'
-import Signup from '../pages/auth/Signup'
+import { createBrowserRouter } from 'react-router-dom';
+import Login from '../pages/auth/Login';
+import Signup from '../pages/auth/Signup';
 import Dashboard from '../pages/dashboard';
-import Layout from '../components/index';
+import ProtectedRoute from '../components/ProtectedRoute';
+import AuthRoute from '../components/AuthRoute';
+import Layout from '../components';
 
-const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
-};
-
-const AppRoutes = () => {
-  return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route
-        path="/dashboard/*"
-        element={
-        //   <PrivateRoute>
-            <Layout>
-              <Dashboard />
-            </Layout>
-        //   </PrivateRoute>
-        }
-      />
-    </Routes>
-  );
-};
-
-export default AppRoutes;
+export const router = createBrowserRouter([
+  {
+    path: '/',
+    element: (
+      <AuthRoute>
+        <Login />
+      </AuthRoute>
+    ),
+  },
+  {
+    path: '/login',
+    element: (
+      <AuthRoute>
+        <Login />
+      </AuthRoute>
+    ),
+  },
+  {
+    path: '/signup',
+    element: (
+      <AuthRoute>
+        <Signup />
+      </AuthRoute>
+    ),
+  },
+  {
+    path: "/dashboard/*",
+    element: (
+      <ProtectedRoute>
+        <Layout>
+          <Dashboard />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+ 
+  // Add other protected routes similarly
+]);

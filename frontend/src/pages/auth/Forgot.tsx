@@ -33,7 +33,7 @@ const Forgot = () => {
     if (!validateForm()) return;
 
     try {
-      const url = `http://localhost:5000/auth/forgot-password`;
+      const url = `${import.meta.env.VITE_API_URL}/auth/forgot-password`;
       console.log({ email }); // Log the email to check
       
       const response = await fetch(url, {

@@ -3,14 +3,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../../utils/Utils';
 import Button from '../../components/home/common/Button';
+import { useAuth } from '../../contexts/auth-contexts';
 
 const Login = () => {
+  const { login } = useAuth();
   const [loginInfo, setLoginInfo] = useState({
     email: '',
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
 
   const navigate = useNavigate();
 
@@ -39,37 +41,21 @@ const Login = () => {
     if (!validateForm()) return;
 
     try {
-      const url = `http://localhost:5000/auth/login`;
-      console.log(loginInfo); // Log the loginInfo object to check its structure 
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(loginInfo)
-      });
+      await login(loginInfo.email, loginInfo.password, rememberMe);
       
-      const result = await response.json();
-      const { success, message, jwtToken, name, error } = result;
+      handleSuccess('Login successful');
       
-      if (success) {
-        handleSuccess(message);
-        localStorage.setItem('token', jwtToken);
-        localStorage.setItem('loggedInUser', name);
-        if (rememberMe) {
-          localStorage.setItem('rememberMe', 'true');
-        }
-        setTimeout(() => {
-          navigate('/chat');
-        }, 1000);
-      } else if (error) {
-        const details = error?.details[0].message;
-        handleError(details);
-      } else {
-        handleError(message);
-      }
+   
+      
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1000);
     } catch (err) {
-      handleError('An error occurred during login');
+      if (err instanceof Error) {
+        handleError(err.message);
+      } else {
+        handleError('An error occurred during login');
+      }
     }
   };
 
