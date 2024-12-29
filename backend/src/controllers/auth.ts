@@ -38,8 +38,14 @@ export const login = async (req: Request, res: Response) => {
     throw new BadRequestsException("Incorrect password!", ErrorCode.INCORRECT_PASSWORD);
   }
 
-  const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET);
+  const token = jwt.sign({ userId: user.id}, JWT_SECRET);
 
 
   res.json({ user: {id: user.id, email: user.email, name: user.name, }, token });
+};
+
+// me
+
+export const me = async (req: Request, res: Response) => {
+  res.json(req.user);
 };

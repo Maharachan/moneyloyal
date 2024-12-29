@@ -18,12 +18,23 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
   }
   
-  export function formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    }).format(date);
+  export function formatDate(date: string | Date): string {
+    try {
+      const d = typeof date === 'string' ? new Date(date) : date;
+      
+      if (isNaN(d.getTime())) {
+        return 'Invalid date';
+      }
+      
+      return d.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Invalid date';
+    }
   }
   
   export function formatPoints(points: number): string {

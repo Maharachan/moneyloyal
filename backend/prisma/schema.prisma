@@ -13,14 +13,36 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  CASHIER
+  USER
+}
+
 model User {
   id          Int      @id @default(autoincrement())
   name        String
   email       String   @unique
-  phonenumber String   // Changed from BigInt to String
+  phonenumber String // Changed from BigInt to String
   password    String
+  role        Role     @default(USER)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@map("users")
+}
+
+model Offer {
+  id                 Int      @id @default(autoincrement())
+  name               String
+  description        String @db.Text
+  points             Int
+  discountPercentage Int
+  expiresAt          DateTime
+  image              String
+  redemptionCode     String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("offers")
 }
