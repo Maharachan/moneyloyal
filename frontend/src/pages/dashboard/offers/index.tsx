@@ -7,13 +7,21 @@ import OfferDialog from './offer-dialog';
 import { type Offer } from '../../../types/offer';
 
 export default function Offers() {
-  const { offers } = useOffers();
+  const { offers, loading, error } = useOffers();
   const [search, setSearch] = useState('');
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
 
   const filteredOffers = offers.filter((offer) =>
-    offer.title.toLowerCase().includes(search.toLowerCase())
+    offer.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (loading) {
+    return <div className="container p-8">Loading offers...</div>;
+  }
+
+  if (error) {
+    return <div className="container p-8 text-red-500">Error: {error}</div>;
+  }
 
   return (
     <div className="container space-y-6 p-8">
@@ -31,7 +39,7 @@ export default function Offers() {
         className="max-w-sm"
       />
 
-      <ScrollArea className="h-[calc(100vh-300px)]">
+      <ScrollArea className="h-[calc(100vh-200px)]">
         <OffersList
           offers={filteredOffers}
           onSelect={(offer) => setSelectedOffer(offer)}

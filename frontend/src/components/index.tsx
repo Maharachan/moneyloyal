@@ -1,12 +1,8 @@
-import { useState } from 'react';
-import { Menu } from 'lucide-react';
-import Button from './home/common/Button';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from './ui/Sheet';
 import Sidebar from './sidebar';
 import MobileNav from './mobile-nav';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
+
 
   return (
     <div className="min-h-screen bg-background">

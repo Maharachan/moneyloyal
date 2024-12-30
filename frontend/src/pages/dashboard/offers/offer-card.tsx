@@ -3,6 +3,7 @@ import { Card, CardContent, CardFooter } from '../../../components/ui/card';
 import Button from '../../../components/home/common/Button';
 import { type Offer } from '../../../types/offer';
 import { formatDate } from '../../../utils/Utils';
+import { useState } from 'react';
 
 interface OfferCardProps {
   offer: Offer;
@@ -10,16 +11,23 @@ interface OfferCardProps {
 }
 
 export default function OfferCard({ offer, onClick }: OfferCardProps) {
+  const [imageError, setImageError] = useState(false);
+  const defaultImage = 'https://images.unsplash.com/photo-1509042239860-f550ce710b93';
+
   return (
     <Card className="overflow-hidden">
-      <img
-        src={offer.image}
-        alt={offer.title}
-        className="aspect-video w-full object-cover"
-      />
+      <div className="relative aspect-video w-full">
+        <img
+          src={imageError ? defaultImage : (offer.image || defaultImage)}
+          alt={offer.name}
+          className="h-full w-full object-cover"
+          onError={() => setImageError(true)}
+          loading="lazy"
+        />
+      </div>
       <CardContent className="space-y-4 p-6">
         <div>
-          <h3 className="font-semibold">{offer.title}</h3>
+          <h3 className="font-semibold">{offer.name}</h3>
           <p className="text-sm text-muted-foreground">{offer.description}</p>
         </div>
         <div className="flex items-center gap-2 text-sm">

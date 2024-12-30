@@ -5,14 +5,13 @@ import Dashboard from '../pages/dashboard';
 import ProtectedRoute from '../components/ProtectedRoute';
 import AuthRoute from '../components/AuthRoute';
 import Layout from '../components';
+import Home from '../pages/Home';
 
 export const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <AuthRoute>
-        <Login />
-      </AuthRoute>
+      <Home />
     ),
   },
   {
