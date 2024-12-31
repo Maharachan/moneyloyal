@@ -1,13 +1,29 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { jwtDecode } from "jwt-decode";
+
+
+
+interface JwtPayload {
+  userId: number;
+  name: string;
+  email: string;
+  role: 'ADMIN' | 'CASHIER' | 'USER';
+}
+
+
+
 
 interface User {
   id: number;
   name: string;
   email: string;
   phonenumber: string;
-  createdAt: string;
-  updatedAt: string;
+  role: 'ADMIN' | 'CASHIER' | 'USER';
+  createdAt?: string;
+  updatedAt?: string;
 }
+
+
 
 interface AuthContextType {
   user: User | null;
@@ -26,22 +42,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Check for existing token and user data on mount
   useEffect(() => {
     const initializeAuth = () => {
-      // Check localStorage first
-      let token = localStorage.getItem('token');
-      let savedUser = localStorage.getItem('user');
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       
-      // If not in localStorage, check sessionStorage
-      if (!token || !savedUser) {
-        token = sessionStorage.getItem('token');
-        savedUser = sessionStorage.getItem('user');
-      }
-      
-      if (token && savedUser) {
+      if (token) {
         try {
-          const parsedUser = JSON.parse(savedUser);
-          setUser(parsedUser);
+          // Decode the JWT token
+          const decoded = jwtDecode<JwtPayload>(token);
+          // Get user data from storage or create from token payload
+          const savedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
+          let userData: User;
+          
+          if (savedUser) {
+            userData = JSON.parse(savedUser);
+          } else {
+            // Create user object from token payload
+            userData = {
+              id: decoded.userId,
+              name: decoded.name,
+              email: decoded.email,
+              role: decoded.role,
+              phonenumber: '' // Set default or get from elsewhere
+            };
+          }
+          
+          setUser(userData);
         } catch (error) {
-          // If there's an error parsing the user data, clear both storages
+          // If there's an error parsing the token or user data, clear both storages
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           sessionStorage.removeItem('token');

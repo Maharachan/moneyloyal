@@ -3,6 +3,8 @@ import {
   Home,
   User,
   LogOut,
+  UserCog,
+  Store,
 } from 'lucide-react';
 import { useAuth } from '../contexts/auth-contexts';
 import { cn } from '../utils/Utils';
@@ -11,10 +13,36 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   
-  const menuItems = [
+  const userMenuItems = [
     { icon: Home, label: 'Home', path: '/dashboard', color: 'text-purple-600' },
     { icon: User, label: 'Profile', path: '/dashboard/profile', color: 'text-purple-600' },
   ];
+
+  const adminMenuItems = [
+    { icon: Home, label: 'Home', path: '/dashboard', color: 'text-purple-600' },
+    { icon: User, label: 'Profile', path: '/dashboard/profile', color: 'text-purple-600' },
+    { icon: Store, label: 'Offer Management', path: '/admin', color: 'text-purple-600' },
+    { icon: UserCog, label: 'Role Management', path: '/admin/role-management', color: 'text-purple-600' },
+  ];
+
+  const cashierMenuItems = [
+    { icon: Home, label: 'Home', path: '/dashboard', color: 'text-purple-600' },
+    { icon: User, label: 'Profile', path: '/dashboard/profile', color: 'text-purple-600' },
+    { icon: Store, label: 'Offer Management', path: '/admin', color: 'text-purple-600' },
+  ];
+
+  // Determine which menu items to show based on user role
+  const getMenuItems = () => {
+    switch (user?.role) {
+      case 'ADMIN':
+        return adminMenuItems;
+      case 'CASHIER':
+        return cashierMenuItems;
+      case 'USER':
+      default:
+        return userMenuItems;
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -31,7 +59,12 @@ const Sidebar = () => {
       {/* Navigation Menu - Scrollable Area */}
       <div className="flex-1 overflow-y-auto">
         <nav className="space-y-1 p-4">
-          {menuItems.map((item) => (
+          {getMenuItems().map((item: { 
+            icon: any; 
+            label: string; 
+            path: string; 
+            color: string 
+          }) => (
             <button
               key={item.path}
               onClick={() => navigate(item.path)}

@@ -2,17 +2,18 @@ import { createBrowserRouter } from 'react-router-dom';
 import Login from '../pages/auth/Login';
 import Signup from '../pages/auth/Signup';
 import Dashboard from '../pages/dashboard';
-import ProtectedRoute from '../components/ProtectedRoute';
 import AuthRoute from '../components/AuthRoute';
 import Layout from '../components';
 import Home from '../pages/Home';
+import AdminDashboard from '../pages/admin';
+import RoleProtectedRoute from '../components/RoleProtectedRoute';
+import RoleManagement from '../pages/admin/AdminDashboard/role-management';
+import OfferManagement from '../pages/admin/AdminDashboard/offer-management';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: (
-      <Home />
-    ),
+    element: <Home />,
   },
   {
     path: '/login',
@@ -33,13 +34,37 @@ export const router = createBrowserRouter([
   {
     path: "/dashboard/*",
     element: (
-      <ProtectedRoute>
+      <RoleProtectedRoute allowedRoles={['USER', 'CASHIER', 'ADMIN']}>
         <Layout>
           <Dashboard />
         </Layout>
-      </ProtectedRoute>
+      </RoleProtectedRoute>
     ),
   },
- 
-  // Add other protected routes similarly
+  {
+    path: "/admin",
+    element: (
+      <RoleProtectedRoute 
+        allowedRoles={['CASHIER', 'ADMIN']} 
+        redirectTo="/dashboard"
+      >
+        <Layout>
+          <OfferManagement />
+        </Layout>
+      </RoleProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/role-management",
+    element: (
+      <RoleProtectedRoute 
+        allowedRoles={['ADMIN']} 
+        redirectTo="/admin"
+      >
+        <Layout>
+          <RoleManagement />
+        </Layout>
+      </RoleProtectedRoute>
+    ),
+  }
 ]);
