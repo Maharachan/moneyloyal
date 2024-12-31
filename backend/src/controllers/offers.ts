@@ -27,7 +27,18 @@ export const updateOffer = async (req: Request, res: Response) => {
     }
 }
 
-export const deleteOffer = async (req: Request, res: Response) => {}
+export const deleteOffer = async (req: Request, res: Response) => {
+    try{
+        const offer = await prismaClient.offer.delete({
+            where:{
+                id: Number(req.params.id)
+            }
+        })
+        res.json({message: "Offer deleted successfully"});
+    }catch(err){
+        throw new NotFoundException("Offer not found", ErrorCode.OFFER_NOT_FOUND);
+    }
+}
 
 export const listOffer = async (req: Request, res: Response) => {
    const count = await prismaClient.offer.count();

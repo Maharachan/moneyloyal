@@ -38,14 +38,17 @@ export const login = async (req: Request, res: Response) => {
     throw new BadRequestsException("Incorrect password!", ErrorCode.INCORRECT_PASSWORD);
   }
 
-  const token = jwt.sign({ userId: user.id}, JWT_SECRET);
+  const token = jwt.sign({ userId: user.id, role: user.role, name: user.name, email: user.email},JWT_SECRET, {expiresIn: process.env.JWT_EXPIRES_IN});
 
 
-  res.json({ user: {id: user.id, email: user.email, name: user.name, }, token });
+  res.json({ user: {id: user.id, email: user.email, name: user.name, role: user.role}, token });
 };
 
 // me
 
 export const me = async (req: Request, res: Response) => {
-  res.json(req.user);
+  const user = req.user;
+  const {id, email, name, role} = user;
+  res.json({id, email, name, role});
 };
+// when user tryed access to admin routes check using me middleware
