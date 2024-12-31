@@ -16,9 +16,11 @@ import { useUpdateOffer } from "../../../hooks/use-update-offer"
 import { useDeleteOffer } from "../../../hooks/use-delete-offer"
 import { useCreateOffer } from "../../../hooks/use-create-offer"
 import { toast } from "react-toastify"
+import { useVerifyUser } from "../../../hooks/verify-user"
 
 
 export default function OfferManagement() {
+  useVerifyUser();
   const { offers, loading: fetchingOffers } = useOffers();
   const { updateOffer, loading: updating } = useUpdateOffer();
   const { createOffer, loading: creating } = useCreateOffer();

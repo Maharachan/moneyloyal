@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { type Offer } from '../types/offer';
 
+
+
 export function useCreateOffer() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
 
   const createOffer = async (offerData: Omit<Offer, 'id'>) => {
     setLoading(true);
@@ -28,6 +31,8 @@ export function useCreateOffer() {
       if (!response.ok) {
         throw new Error('Failed to create offer');
       }
+
+     
 
       const newOffer = await response.json();
       return newOffer.data;

@@ -19,11 +19,10 @@ export function useDeleteOffer() {
 
       if (!response.ok) {
         throw new Error('Failed to delete offer');
-        toast.error('Failed to delete offer');
       }
 
       return true;
-      toast.success('Offer deleted successfully');
+      
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
       toast.error('An error occurred');
