@@ -32,7 +32,7 @@ export default function RevitalizeLoyalty() {
           </div>
           <div>
             <img 
-              src="https://fetchpik.com/images/fetchpik.com-QRWphJU0C2.jpg" 
+              src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df" 
               alt="Loyalty Program Interface"
               className="w-full rounded-2xl shadow-lg"
             />

@@ -1,13 +1,3 @@
-import { Button } from "../../../components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../../../components/ui/dialog"
-import { Input } from "../../../components/ui/input"
-import { Label } from "../../../components/ui/label"
 import {
   Select,
   SelectContent,
@@ -15,129 +5,94 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select"
-import { Plus } from 'lucide-react'
-import { useState } from "react"
-
-interface UserRole {
-  id: string
-  email: string
-  role: "ADMIN" | "CASHIER" | "USER"
-}
+import { useGetUsers } from "../../../hooks/use-get-users"
+import { useUpdateRole } from "../../../hooks/use-update-role"
+import { toast } from "react-toastify"
+import { User } from "../../../types/user"
 
 export default function RoleManagement() {
-  const [users, setUsers] = useState<UserRole[]>([
-    { id: "1", email: "admin@example.com", role: "ADMIN" },
-    { id: "2", email: "cashier@example.com", role: "CASHIER" },
-    { id: "3", email: "user@example.com", role: "USER" },
-  ])
+  const { users = [], loading: fetchingUsers, error: fetchError } = useGetUsers();
+  const { updateRole, loading: updating, error: updateError } = useUpdateRole();
 
-  const handleAddUser = (userData: Partial<UserRole>) => {
-    setUsers([...users, { ...userData, id: Math.random().toString() } as UserRole])
+  const handleUpdateRole = async (userId: number, role: User["role"]) => {
+    try {
+      await updateRole(userId, role);
+      
+      // Show toast and wait before reload
+      toast.success('Role updated successfully', {
+        onClose: () => window.location.reload(),
+        autoClose: 800 
+      });
+      
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to update role');
+    }
   }
 
-  const handleUpdateRole = (id: string, role: UserRole["role"]) => {
-    setUsers(users.map((user) => (user.id === id ? { ...user, role } : user)))
+  if (fetchingUsers) {
+    return <div className="container p-8">Loading users...</div>;
+  }
+
+  if (fetchError) {
+    return <div className="container p-8 text-red-500">Error: {fetchError}</div>;
   }
 
   return (
     <div className="container space-y-6 p-8">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Role Management</h2>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Add User
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New User</DialogTitle>
-            </DialogHeader>
-            <UserForm onSave={handleAddUser} />
-          </DialogContent>
-        </Dialog>
       </div>
 
       <div className="bg-white rounded-lg border border-gray-200">
-        <div className="p-4 grid grid-cols-3 font-medium border-b border-gray-200">
+        <div className="p-4 grid grid-cols-4 font-medium border-b border-gray-200">
+          <div>Name</div>
           <div>Email</div>
           <div>Current Role</div>
           <div>Actions</div>
         </div>
-        {users.map((user) => (
-          <div key={user.id} className="p-4 grid grid-cols-3 items-center border-b last:border-0">
-            <div>{user.email}</div>
-            <div>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                {user.role}
-              </span>
+        {users && users.length > 0 ? (
+          users.map((user) => (
+            <div key={user.id} className="p-4 grid grid-cols-4 items-center border-b last:border-0">
+              <div>{user.name}</div>
+              <div>{user.email}</div>
+              <div>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                  {user.role}
+                </span>
+              </div>
+              <div>
+                <Select
+                  value={user.role}
+                  onValueChange={(value: User["role"]) => user.id && handleUpdateRole(user.id, value)}
+                  disabled={updating}
+                >
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ADMIN">Admin</SelectItem>
+                    <SelectItem value="CASHIER">Cashier</SelectItem>
+                    <SelectItem value="USER">User</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div>
-              <Select
-                value={user.role}
-                onValueChange={(value: UserRole["role"]) => handleUpdateRole(user.id, value)}
-              >
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Select role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ADMIN">Admin</SelectItem>
-                  <SelectItem value="CASHIER">Cashier</SelectItem>
-                  <SelectItem value="USER">User</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          ))
+        ) : (
+          <div className="p-4 text-center text-gray-500">
+            No users found
           </div>
-        ))}
+        )}
       </div>
+
+      {updateError && (
+        <div className="text-red-500 mt-4">
+          Error updating role: {updateError}
+        </div>
+      )}
     </div>
   )
 }
 
-function UserForm({ onSave }: { onSave: (user: Partial<UserRole>) => void }) {
-  const [formData, setFormData] = useState({
-    email: "",
-    role: "USER" as UserRole["role"],
-  })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSave(formData)
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          type="email"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          required
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="role">Role</Label>
-        <Select
-          value={formData.role}
-          onValueChange={(value: UserRole["role"]) => setFormData({ ...formData, role: value })}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select role" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ADMIN">Admin</SelectItem>
-            <SelectItem value="CASHIER">Cashier</SelectItem>
-            <SelectItem value="USER">User</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <Button type="submit" className="w-full">
-        Add User
-      </Button>
-    </form>
-  )
-}
 
