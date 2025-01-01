@@ -1,11 +1,11 @@
 import { createBrowserRouter } from 'react-router-dom';
 import Login from '../pages/auth/Login';
 import Signup from '../pages/auth/Signup';
+import ForgotPassword from '../pages/auth/Forgot';
 import Dashboard from '../pages/dashboard';
 import AuthRoute from '../components/AuthRoute';
 import Layout from '../components';
 import Home from '../pages/Home';
-import AdminDashboard from '../pages/admin';
 import RoleProtectedRoute from '../components/RoleProtectedRoute';
 import RoleManagement from '../pages/admin/AdminDashboard/role-management';
 import OfferManagement from '../pages/admin/AdminDashboard/offer-management';
@@ -28,6 +28,14 @@ export const router = createBrowserRouter([
     element: (
       <AuthRoute>
         <Signup />
+      </AuthRoute>
+    ),
+  },
+  {
+    path: '/forgot-password',
+    element: (
+      <AuthRoute>
+        <ForgotPassword />      
       </AuthRoute>
     ),
   },
