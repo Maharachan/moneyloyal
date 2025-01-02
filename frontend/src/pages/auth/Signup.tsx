@@ -5,6 +5,7 @@ import { handleError, handleSuccess } from '../../utils/Utils';
 import Button from '../../components/home/common/Button';
 import { useAuth } from '../../contexts/auth-contexts';
 
+
 const Signup = () => {
   const { signup } = useAuth();
   const [signupInfo, setSignupInfo] = useState({
@@ -62,12 +63,14 @@ const Signup = () => {
     try {
       await signup(signupInfo.email, signupInfo.password, signupInfo.name, signupInfo.phone);
       handleSuccess('Signup successful');
+
+
       setTimeout(() => {
         navigate('/dashboard');
       }, 1000);
     } catch (error) {
       console.error('Signup error:', error);
-      handleError("An error occurred during signup");
+      handleError("Sign up " + error);
     }
   };
 
