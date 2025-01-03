@@ -9,8 +9,10 @@ import { useGetUsers } from "../../../hooks/use-get-users"
 import { useUpdateRole } from "../../../hooks/use-update-role"
 import { toast } from "react-toastify"
 import { User } from "../../../types/user"
+import { useVerifyUser } from "../../../hooks/verify-user"
 
 export default function RoleManagement() {
+  useVerifyUser();
   const { users = [], loading: fetchingUsers, error: fetchError } = useGetUsers();
   const { updateRole, loading: updating, error: updateError } = useUpdateRole();
 
