@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { jwtDecode } from "jwt-decode";
+import { useSignupEmail } from '../hooks/use-signup-email';
 
 
 
@@ -38,6 +39,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { sendEmail } = useSignupEmail();
 
   // Check for existing token and user data on mount
   useEffect(() => {
@@ -127,8 +129,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       // After successful signup, log the user in
       await login(email, password, true);
+
+      await sendEmail(email);
     },
-    [login]
+    [login, sendEmail]
   );
 
   const logout = useCallback(() => {
